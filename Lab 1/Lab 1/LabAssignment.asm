@@ -48,37 +48,41 @@ CalculateSpectrum PROC	; [RCX] - Spectrum, [RDX] - Signal
 
 fninit							; Инициализируем FPU без ожидания.
 
+push RBP						; Сохранение RBP				
+mov RBP, RSP					; Копирование указателя стека в RBP				
+sub RSP, 1						; Выделение памяти для локальных переменных
+
 ; Вычисление чётных элементов спектра.
 movsx RAX, byte ptr[RDX] + 3	; Кладём x[3] в RAX.
-mov [RCX] + 28, RAX				; X[7] вычисляется перед выходом из процедуры, поэтому будем использовать для хранения промежуточных данных.
-fild word ptr[RCX] + 28			; Загрузили на стек х[3].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[3].
 movsx RAX, byte ptr[RDX] + 7	; Кладём x[7] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[7].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[7].
 faddp							; Стек: (x[3] + x[7]).
 
 movsx RAX, byte ptr[RDX] + 1	; Кладём x[1] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[1].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[1].
 movsx RAX, byte ptr[RDX] + 5	; Кладём x[5] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[5].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[5].
 faddp							; Стек: (x[1] + x[5]), (x[3] + x[7]).
 
 movsx RAX, byte ptr[RDX] + 2	; Кладём x[2] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[2].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[2].
 movsx RAX, byte ptr[RDX] + 6	; Кладём x[6] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[6].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[6].
 faddp							; Стек: (x[2] + x[6]), (x[1] + x[5]), (x[3] + x[7]).
 
 movsx RAX, byte ptr[RDX]		; Кладём x[0] в RAX.
-mov [RCX] + 28, RAX			
-fild word ptr[RCX] + 28			; Загрузили на стек x[0].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек x[0].
 movsx RAX, byte ptr[RDX] + 4	; Кладём x[4] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28 		; Загрузили на стек х[4].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]	 		; Загрузили на стек х[4].
 faddp							; Стек: (x[0] + x[4]), (x[2] + x[6]), (x[1] + x[5]), (x[3] + x[7]).
 
 ; Стек: (x[0] + x[4]), (x[2] + x[6]), (x[1] + x[5]), (x[3] + x[7]).
@@ -106,35 +110,35 @@ fstp real4 ptr[RCX] + 40		; Записали X[10].
 
 ; Вычисление нечётных элементов спектра.
 movsx RAX, byte ptr[RDX] + 3	; Кладём x[3] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[3].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[3].
 movsx RAX, byte ptr[RDX] + 7	; Кладём x[7] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[7].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[7].
 fsubp							; Стек: (x[3] - x[7]).
 
 movsx RAX, byte ptr[RDX] + 1	; Кладём x[1] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[1].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[1].
 movsx RAX, byte ptr[RDX] + 5	; Кладём x[5] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[5].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[5].
 fsubp							; Стек: (x[1] - x[5]), (x[3] - x[7]).
 
 movsx RAX, byte ptr[RDX] + 2	; Кладём x[2] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[2].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[2].
 movsx RAX, byte ptr[RDX] + 6	; Кладём x[6] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[6].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[6].
 fsubp							; Стек: (x[2] - x[6]), (x[1] - x[5]), (x[3] - x[7]).
 
 movsx RAX, byte ptr[RDX] 		; Кладём x[0] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[0].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[0].
 movsx RAX, byte ptr[RDX] + 4	; Кладём x[4] в RAX.
-mov [RCX] + 28, RAX
-fild word ptr[RCX] + 28			; Загрузили на стек х[4].
+mov [RBP - 2], RAX
+fild word ptr[RBP - 2]			; Загрузили на стек х[4].
 fsubp							; Стек: (x[0] - x[4]), (x[2] - x[6]), (x[1] - x[5]), (x[3] - x[7]).
 
 ; Стек: (x[0] - x[4]), (x[2] - x[6]), (x[1] - x[5]), (x[3] - x[7]).
@@ -165,6 +169,8 @@ fadd st, st(1)					; Стек: -x26 + root * (x15 + x37), root * (x15 + x37), x15, x
 fst real4 ptr[RCX] + 52			; Записали X[13].
 fchs							; Стек: x26 - root * (x15 + x37), root * (x15 + x37), x15, x37.
 fstp real4 ptr[RCX] + 44		; Записали X[11].
+
+leave							; Восстановление указателя стека и восстановление RBP.
 
 ; Очищаем стек.
 ffree st(0)
@@ -199,10 +205,12 @@ RecoverSignal PROC	; [RCX] - Signal
 ; x[5] = (X[0] - X[4]) - (X[10] - X[14]) - root * ((X[1] - X[5]) - (X[3] - X[7]) - (X[9] - X[13]) - (X[11] - X[15]))    
 ; x[7] = (X[0] - X[4]) + (X[10] - X[14]) + root * ((X[1] - X[5]) - (X[3] - X[7]) + (X[9] - X[13]) + (X[11] - X[15]))
 
-; Промежуточные 16-битные переменные будем класть по адресу [RDX] + 32, так как X[8] в вычислениях не используется.
-
 ; Вычисление чётных элементов сигнала.
 fninit
+
+push RBP						; Сохранение RBP				
+mov RBP, RSP					; Копирование указателя стека в RBP				
+sub RSP, 1						; Выделение памяти для локальных переменных
 
 fld real4 ptr[RDX] + 4			; Загрузили X[1].
 fld real4 ptr[RDX] + 20			; Загрузили X[5].
@@ -220,7 +228,7 @@ fld real4 ptr[RDX] + 24			; Загрузили X[6].
                                 ; Стек: X[6], X[2], (X[3] + X[7]) + (X[1] + X[5]).
 faddp							; Стек: X[2] + X[6], (X[3] + X[7]) + (X[1] + X[5]).
 fld real4 ptr[RDX]				; Загрузили X[0].
-fld real4 ptr[RDX] + 16		; Загрузили X[4].
+fld real4 ptr[RDX] + 16			; Загрузили X[4].
 faddp							; Стек: (X[0] + X[4]), (X[2] + X[6]), (X[3] + X[7]) + (X[1] + X[5]).
 
 ; Стек: (x[0] + x[4]), (x[2] + x[6]), (x[1] + x[5]) + (x[3] + x[7]).
@@ -229,8 +237,8 @@ fadd st, st(1)					; Стек: x04 + x26, x26, x15 + x37.
 fadd st, st(2)					; Стек: x04 + x26 + x15 + x37, x26, x15 + x37.
 
 fdiv signalLength				; Перед записью в ответ необходимо поделить на длину сигнала.
-fist word ptr[RDX] + 32
-mov ax, word ptr[RDX] + 32
+fist word ptr[RBP - 2]
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX], al			; Записали x[0]. 
 fmul signalLength				
 
@@ -238,8 +246,8 @@ fsub st, st(2)					; Стек: x04 + x26, x26, x37 + x15
 fsub st, st(2)					; Стек: x04 + x26 - x37 - x15, x26, x37 + x15
 
 fdiv signalLength
-fist word ptr[RDX] + 32
-mov ax, word ptr[RDX] + 32
+fist word ptr[RBP - 2]
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX] + 4, al		; Записали x[4].
 fmul signalLength				
 
@@ -259,8 +267,8 @@ fsubp							; Стек: (X[9] + X[13]) - (X[11] + X[15]) ...
 
 fadd st, st(1)					; Стек: x04 - x26 + x9_13 - x11_15, x04 - x26, x26, x37 + x15
 fdiv signalLength
-fist word ptr[RDX] + 32
-mov ax, word ptr[RDX] + 32
+fist word ptr[RBP - 2]
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX] + 6, al		; Записали x[6]. 
 fmul signalLength
 
@@ -269,8 +277,8 @@ fchs							; Стек: - x9_13 + x11_15, x04 - x26, x26, x37 + x15
 faddp							; Стек: x04 - x26 - x9_13 + x11_15, x26, x37 + x15
 
 fdiv signalLength
-fistp word ptr[RDX] + 32		; Стек: x26, x37 + x15
-mov ax, word ptr[RDX] + 32
+fistp word ptr[RBP - 2]			; Стек: x26, x37 + x15
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX] + 2, al		; Записали x[2].
 fsubp st(0), st(0)
 fsubp st(0), st(0)
@@ -299,15 +307,15 @@ faddp							; X[9] - X[13] + X[11].
 fld real4 ptr[RDX] + 60			; Загрузили X[15].
 fsubp							; (X[9] - X[13]) + (X[11] - X[15]).
 
-								; Стек: x9_13 + x11_15, x15 - x37, x10_14, x04.
+                                ; Стек: x9_13 + x11_15, x15 - x37, x10_14, x04.
 fadd st, st(1)					; Стек: x15 - x37 + x9_13 + x11_15, x15 - x37, x10_14, x04.
 fmul root						; Стек: root * (x15 - x37 + x9_13 + x11_15), x15 - x37, x10_14, x04.
 fadd st, st(2)					; Стек: x10_14 + root * (x15 - x37 + x9_13 + x11_15), x15 - x37, x10_14, x04.
 fadd st, st(3)					; Стек: x04 + x10_14 + root * (x15 - x37 + x9_13 + x11_15), x15 - x37, x10_14, x04.
 
 fdiv signalLength
-fist word ptr[RDX] + 32
-mov ax, word ptr[RDX] + 32
+fist word ptr[RBP - 2]
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX] + 7, al		; Записали x[7].
 fmul signalLength
 
@@ -318,8 +326,8 @@ fadd st, st(2)					; Стек: x10_14 - root * (x15 - x37 + x9_13 + x11_15), x15 - x
 fadd st, st(3)					; Стек: x04 + x10_14 - root * (x15 - x37 + x9_13 + x11_15), x15 - x37, x10_14, x04.
 
 fdiv signalLength
-fist word ptr[RDX] + 32
-mov ax, word ptr[RDX] + 32
+fist word ptr[RBP - 2]
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX] + 3, al		; Записали x[3].
 fmul signalLength
 
@@ -333,8 +341,8 @@ fsub st, st(2)					; Стек: x04 + root * (x15 - x37 - x9_13 - x11_15), x15 - x37,
 fsub st, st(2)					; Стек: x04 - x10_14 + root * (x15 - x37 - x9_13 - x11_15), x15 - x37, x10_14, x04.
 
 fdiv signalLength
-fist word ptr[RDX] + 32
-mov ax, word ptr[RDX] + 32
+fist word ptr[RBP - 2]
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX] + 1, al		; Записали x[1].
 fmul signalLength
 
@@ -345,10 +353,12 @@ fsub st, st(2)					; Стек: - x10_14 - root * (x15 - x37 - x9_13 - x11_15), x15 -
 fadd st, st(3)					; Стек: x04 - x10_14 - root * (x15 - x37 - x9_13 - x11_15), x15 - x37, x10_14, x04.
 
 fdiv signalLength
-fistp word ptr[RDX] + 32
-mov ax, word ptr[RDX] + 32
+fistp word ptr[RBP - 2]
+mov ax, word ptr[RBP - 2]
 mov byte ptr[RCX] + 5, al		; Записали x[5].
 fmul signalLength
+
+leave							; Восстановление указателя стека и восстановление RBP.
 
 ; Очищаем стек.
 ffree st(0)                
