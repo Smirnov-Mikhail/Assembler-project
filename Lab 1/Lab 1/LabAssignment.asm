@@ -50,7 +50,7 @@ fninit							; Инициализируем FPU без ожидания.
 
 push RBP						; Сохранение RBP				
 mov RBP, RSP					; Копирование указателя стека в RBP				
-sub RSP, 1						; Выделение памяти для локальных переменных
+sub RSP, 8						; Выделение памяти для локальных переменных
 
 ; Вычисление чётных элементов спектра.
 movsx RAX, byte ptr[RDX] + 3	; Кладём x[3] в RAX.
@@ -210,7 +210,7 @@ fninit
 
 push RBP						; Сохранение RBP				
 mov RBP, RSP					; Копирование указателя стека в RBP				
-sub RSP, 1						; Выделение памяти для локальных переменных
+sub RSP, 8						; Выделение памяти для локальных переменных
 
 fld real4 ptr[RDX] + 4			; Загрузили X[1].
 fld real4 ptr[RDX] + 20			; Загрузили X[5].
@@ -238,8 +238,8 @@ fadd st, st(2)					; Стек: x04 + x26 + x15 + x37, x26, x15 + x37.
 
 fdiv signalLength				; Перед записью в ответ необходимо поделить на длину сигнала.
 fist word ptr[RBP - 2]
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX], al			; Записали x[0]. 
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX], AL			; Записали x[0]. 
 fmul signalLength				
 
 fsub st, st(2)					; Стек: x04 + x26, x26, x37 + x15
@@ -247,8 +247,8 @@ fsub st, st(2)					; Стек: x04 + x26 - x37 - x15, x26, x37 + x15
 
 fdiv signalLength
 fist word ptr[RBP - 2]
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX] + 4, al		; Записали x[4].
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX] + 4, AL		; Записали x[4].
 fmul signalLength				
 
 fadd st, st(2)					; Стек: x04 + x26, x26, x37 + x15
@@ -268,8 +268,8 @@ fsubp							; Стек: (X[9] + X[13]) - (X[11] + X[15]) ...
 fadd st, st(1)					; Стек: x04 - x26 + x9_13 - x11_15, x04 - x26, x26, x37 + x15
 fdiv signalLength
 fist word ptr[RBP - 2]
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX] + 6, al		; Записали x[6]. 
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX] + 6, AL		; Записали x[6]. 
 fmul signalLength
 
 fsub st, st(1)					; Стек: x9_13 - x11_15, x04 - x26, x26, x37 + x15
@@ -278,8 +278,8 @@ faddp							; Стек: x04 - x26 - x9_13 + x11_15, x26, x37 + x15
 
 fdiv signalLength
 fistp word ptr[RBP - 2]			; Стек: x26, x37 + x15
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX] + 2, al		; Записали x[2].
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX] + 2, AL		; Записали x[2].
 fsubp st(0), st(0)
 fsubp st(0), st(0)
 
@@ -315,8 +315,8 @@ fadd st, st(3)					; Стек: x04 + x10_14 + root * (x15 - x37 + x9_13 + x11_15), x
 
 fdiv signalLength
 fist word ptr[RBP - 2]
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX] + 7, al		; Записали x[7].
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX] + 7, AL		; Записали x[7].
 fmul signalLength
 
 fchs							; Стек: - x04 - x10_14 - root * (x15 - x37 + x9_13 + x11_15), x15 - x37, x10_14, x04.
@@ -327,8 +327,8 @@ fadd st, st(3)					; Стек: x04 + x10_14 - root * (x15 - x37 + x9_13 + x11_15), x
 
 fdiv signalLength
 fist word ptr[RBP - 2]
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX] + 3, al		; Записали x[3].
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX] + 3, AL		; Записали x[3].
 fmul signalLength
 
 fld st(1)						; Стек: x15 - x37, x04 + x10_14 - root * (x15 - x37 + x9_13 + x11_15), x15 - x37, x10_14, x04.
@@ -342,8 +342,8 @@ fsub st, st(2)					; Стек: x04 - x10_14 + root * (x15 - x37 - x9_13 - x11_15), x
 
 fdiv signalLength
 fist word ptr[RBP - 2]
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX] + 1, al		; Записали x[1].
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX] + 1, AL		; Записали x[1].
 fmul signalLength
 
 fchs							; Стек: - x04 + x10_14 - root * (x15 - x37 - x9_13 - x11_15), x15 - x37, x10_14, x04.
@@ -354,8 +354,8 @@ fadd st, st(3)					; Стек: x04 - x10_14 - root * (x15 - x37 - x9_13 - x11_15), x
 
 fdiv signalLength
 fistp word ptr[RBP - 2]
-mov ax, word ptr[RBP - 2]
-mov byte ptr[RCX] + 5, al		; Записали x[5].
+mov AX, word ptr[RBP - 2]
+mov byte ptr[RCX] + 5, AL		; Записали x[5].
 fmul signalLength
 
 leave							; Восстановление указателя стека и восстановление RBP.
