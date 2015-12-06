@@ -61,35 +61,29 @@ CalculateSpectrum PROC	; [RCX] - Spectrum
 	; DFT 4x4
 	VMULPS xmm2, xmm4, w4Re 
 	VADDPS xmm2, xmm0, xmm2
-	VMULPS xmm4, xmm4, w4Im 	
+	VMULPS xmm4, xmm4, w4Im 
 	VMULPS xmm3, xmm5, w4Re
 	VADDPS xmm3, xmm1, xmm3	
 	VMULPS xmm5, xmm5, w4Im
 
 	; DFT 8x8 Re
-	VMULPS xmm0, xmm3, w81Re 
+	VMULPS xmm0, xmm3, w81Re
 	VADDPS xmm0, xmm2, xmm0
-	VMULPS xmm1, xmm3, w82Re 
-	VADDPS xmm1, xmm2, xmm1
-	VMULPS xmm6, xmm5, w81Im
-	VSUBPS xmm0, xmm0, xmm6
-	VMULPS xmm6, xmm5, w82Im
-	VSUBPS xmm1, xmm1, xmm6
+	VFMADD231PS xmm2, xmm3, w82Re
+	VFNMADD231PS xmm0, xmm5, w81Im
+	VFNMADD231PS xmm2, xmm5, w82Im
 
 	; DFT 8x8 Im
-	VMULPS xmm7, xmm3, w81Im 
+	VMULPS xmm7, xmm3, w81Im
 	VADDPS xmm7, xmm4, xmm7
-	VMULPS xmm8, xmm3, w82Im 
-	VADDPS xmm8, xmm4, xmm8
-	VMULPS xmm6, xmm5, w81Re
-	VADDPS xmm7, xmm7, xmm6
-	VMULPS xmm6, xmm5, w82Re
-	VADDPS xmm8, xmm8, xmm6
+	VFMADD231PS xmm4, xmm3, w82Im
+	VFMADD231PS xmm7, xmm5, w81Re
+	VFMADD231PS xmm4, xmm5, w82Re
 
 	VMOVDQU xmmword ptr[rcx], xmm0		; Записываем результаты.
-	VMOVDQU xmmword ptr[rcx + 16], xmm1
+	VMOVDQU xmmword ptr[rcx + 16], xmm2
 	VMOVDQU xmmword ptr[rcx + 32], xmm7
-	VMOVDQU xmmword ptr[rcx + 48], xmm8
+	VMOVDQU xmmword ptr[rcx + 48], xmm4
 
 	VMOVDQU xmm6, xmmword ptr[rsp]		; Восстанавливаем регистры.
 	VMOVDQU xmm7, xmmword ptr[rsp + 16]
@@ -111,7 +105,7 @@ RecoverSignal PROC	; [RCX] - Signal
 	VMOVDQU xmmword ptr[rsp + 16], xmm7
 	VMOVDQU xmmword ptr[rsp + 32], xmm8
 
-		VMOVDQU xmm0, xmmword ptr[rdx]		; x0, x1, x2, x3.
+	VMOVDQU xmm0, xmmword ptr[rdx]			; x0, x1, x2, x3.
 	VMOVDQU xmm1, xmmword ptr[rdx + 4*4]	; x4, x5, x6, x7.
 	VMOVDQU xmm2, xmmword ptr[rdx + 4*8]	; x8, x9, x10, x11.
 	VMOVDQU xmm3, xmmword ptr[rdx + 4*12]	; x12, x13, x14, x15.
@@ -129,7 +123,7 @@ RecoverSignal PROC	; [RCX] - Signal
 	VMULPS xmm7, xmm3, w82Im
 	VADDPS xmm6, xmm6, xmm7	
 	VMULPS xmm6, xmm6, half		; Вещественная часть нижней бабочки. Обозначим a4, a5, a6, a7.
-
+ 
 	VMULPS xmm7, xmm0, w82Im
 	VMULPS xmm8, xmm1, w81Im
 	VADDPS xmm7, xmm7, xmm8
