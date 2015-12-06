@@ -10,4 +10,4 @@
 // Тип данных отсчетов сигнала
 typedef __int8 signal_type;
 // Тип данных отсчетов спектра
-typedef float spectrum_type ;
+typedef float spectrum_type;
